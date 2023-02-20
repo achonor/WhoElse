@@ -397,6 +397,7 @@ MonoBehaviour:
   _ipInputField: {fileID: 1587513768}
   _localIPTextTemplate: {fileID: 1540323659}
   _startHostBtnText: {fileID: 1198886448}
+  _gameManagerPrefab: {fileID: 7280835634725546492, guid: 8d40c9aa69ca8d3478d5819eabdb7e37, type: 3}
 --- !u!114 &756111175
 MonoBehaviour:
   m_ObjectHideFlags: 0

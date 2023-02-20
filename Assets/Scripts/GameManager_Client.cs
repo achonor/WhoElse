@@ -12,7 +12,7 @@ namespace Achonor.WhoElse
         /// <param name="index"></param>
         /// <param name="player"></param>
         [ClientRpc]
-        private void UpdatePlayerClientRpc(int index, Player player)
+        public void UpdatePlayerClientRpc(int index, Player player)
         {
             _players[index] = player;
         }

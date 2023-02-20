@@ -10,11 +10,11 @@ namespace Achonor.WhoElse
         public static GameManager Instance = null;
         public static GameManager S => Instance; 
         
-        private Player[] _players = new Player[2];
+        private static Player[] _players = new Player[2];
 
         [SerializeField] private List<PlayBase> _plays;
 
-        public void ForPlayers(Func<int, Player, bool> callback)
+        public static void ForPlayers(Func<int, Player, bool> callback)
         {
             if (null == callback)
             {
@@ -35,16 +35,15 @@ namespace Achonor.WhoElse
                 }
             }
         }
-        
+
+        private void Awake()
+        {
+            Instance = this;
+        }
+
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            if (IsServer)
-            {
-                NetworkManager.ConnectionApprovalCallback += ConnectionApprovalCallbackServer;
-                NetworkManager.OnClientConnectedCallback += OnClientConnectedCallbackServer;
-                NetworkManager.OnClientDisconnectCallback += OnClientDisconnectCallbackServer;
-            }
             if (IsClient)
             {
                 Player player = new Player();

@@ -11,13 +11,13 @@ namespace Achonor.WhoElse
     public partial class GameManager
     {
         
-        private ulong[] _playerClients = new ulong[2];
+        private static ulong[] _playerClients = new ulong[2];
 
-        public bool IsFull
+        public static bool IsFull
         {
             get
             {
-                return (0 != _playerClients[0] && 0 != _playerClients[1]);
+                return 0 != _playerClients[1];
             }
         }
         
@@ -26,6 +26,13 @@ namespace Achonor.WhoElse
         /// </summary>
         public async void StartGameServer()
         {
+            //同步所有玩家信息
+            ForPlayers((idx, player) =>
+            {
+                player.Score = 0;
+                UpdatePlayerClientRpc(idx, player);
+                return true;
+            });
             await Task.Delay(1000);
             //随机加载一个玩法
             int playIdx = Random.Range(0, _plays.Count);
@@ -33,7 +40,7 @@ namespace Achonor.WhoElse
             play.NetworkObject.Spawn();
         }
         
-        private void ConnectionApprovalCallbackServer(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
+        public static void ConnectionApprovalCallbackServer(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
         {
             if (IsFull)
             {
@@ -48,35 +55,31 @@ namespace Achonor.WhoElse
             return;
         }
 
-        private void OnClientConnectedCallbackServer(ulong clientId)
+        public static void OnClientConnectedCallbackServer(ulong clientId)
         {
-            if (0 == _playerClients[0])
-            {
-                _playerClients[0] = clientId;
-            }else
+            if (0 != clientId)
             {
                 _playerClients[1] = clientId;
             }
-
             if (IsFull)
             {
-                StartGameServer();
+                S.StartGameServer();
             }
         }
 
-        private void OnClientDisconnectCallbackServer(ulong clientId)
+        public static void OnClientDisconnectCallbackServer(ulong clientId)
         {
             if (clientId == _playerClients[0])
             {
                 _players[0] = null;
                 _playerClients[0] = 0;
-                UpdatePlayerClientRpc(0, null);
+                S.UpdatePlayerClientRpc(0, null);
             }
             else
             {
                 _players[1] = null;
                 _playerClients[1] = 0;
-                UpdatePlayerClientRpc(1, null);
+                S.UpdatePlayerClientRpc(1, null);
             }
         }
 

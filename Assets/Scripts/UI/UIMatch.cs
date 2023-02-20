@@ -23,6 +23,7 @@ namespace Achonor.WhoElse
 
         [SerializeField] private Text _startHostBtnText;
 
+        [SerializeField] private NetworkObject _gameManagerPrefab;
         private void Awake()
         {
             var hostEntry = Dns.GetHostEntry(Dns.GetHostName());
@@ -53,10 +54,20 @@ namespace Achonor.WhoElse
             if (NetworkManager.Singleton.IsListening)
             {
                 NetworkManager.Singleton.Shutdown();
+                NetworkManager.Singleton.ConnectionApprovalCallback -= GameManager.ConnectionApprovalCallbackServer;
+                NetworkManager.Singleton.OnClientConnectedCallback -= GameManager.OnClientConnectedCallbackServer;
+                NetworkManager.Singleton.OnClientDisconnectCallback -= GameManager.OnClientDisconnectCallbackServer;
             }
             else
             {
-                NetworkManager.Singleton.StartHost();
+                NetworkManager.Singleton.ConnectionApprovalCallback += GameManager.ConnectionApprovalCallbackServer;
+                NetworkManager.Singleton.OnClientConnectedCallback += GameManager.OnClientConnectedCallbackServer;
+                NetworkManager.Singleton.OnClientDisconnectCallback += GameManager.OnClientDisconnectCallbackServer;
+                if (NetworkManager.Singleton.StartHost() && null == GameManager.S)
+                {
+                    var gameManager = Instantiate(_gameManagerPrefab);
+                    gameManager.Spawn();
+                }
             }
         }
 

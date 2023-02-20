@@ -21,11 +21,19 @@ namespace Achonor.WhoElse
             get { return _name; }
             set { _name = value; }
         }
+
+        private int _score;
+        public int Score
+        {
+            get { return _score; }
+            set { _score = value; }
+        }
         
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref _clientId);
             serializer.SerializeValue(ref _name);
+            serializer.SerializeValue(ref _score);
         }
     }
 }
